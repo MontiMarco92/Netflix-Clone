@@ -26,12 +26,11 @@ const Home = ({
   topRated,
   trendingNow,
 }: Props) => {
-  console.log(netflixOriginals)
   return (
     // because set fixed header we need to define relative to
-    <div className="relative h-screen bg-gradient-to-b from-gray-900/10 to-[#010511] lg:h-[140vh]">
+    <div className="relative h-screen bg-gradient-to-b  lg:h-[140vh]">
       <Head>
-        <title>Create Next App</title>
+        <title>Home - Netflix</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
