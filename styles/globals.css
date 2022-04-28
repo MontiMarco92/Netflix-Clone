@@ -27,6 +27,9 @@
   }
 
   .input {
-    @apply w-full rounded bg-[#333] px-5 py-3.5 placeholder-[gray] outline-none focus:bg-[#454545] md:text-xl;
+    @apply w-full rounded bg-[#333] px-5 py-3.5 placeholder-[#8c8c8c] outline-none focus:bg-[#454545] md:text-xl;
+  }
+  .errorMsg {
+    @apply text-[#e87c03];
   }
 }
