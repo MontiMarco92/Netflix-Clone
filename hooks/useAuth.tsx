@@ -35,7 +35,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(false)
   const [user, setUser] = useState<User | null>(null)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
   const [initialLoading, setInitialLoading] = useState(true)
   const router = useRouter()
 
@@ -67,8 +67,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(newUser.user)
       router.push('/')
       setLoading(false)
-    } catch (error: unknown) {
-      console.log(error)
+    } catch (err) {
+      console.log(err)
+      setError('This email has already been registered. Please sign in.')
     } finally {
       setLoading(false)
     }
@@ -83,8 +84,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         router.push('/')
         setLoading(false)
       })
-      .catch((error) => {
-        console.log(error)
+      .catch((err) => {
+        console.log(err.message)
+
+        if (err.message.includes('user-not-found')) {
+          setError(
+            "Sorry, we can't find an account with this email address. Please try again or create new account"
+          )
+        } else if (err.message.includes('wrong-password')) {
+          setError(
+            'Incorrect password. Please try again or you can reset your password'
+          )
+        }
         setLoading(false)
       })
       .finally(() => setLoading(false))

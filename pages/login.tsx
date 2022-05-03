@@ -11,15 +11,19 @@ interface FormData {
 
 const Login = () => {
   const [login, setLogin] = useState(false)
-  const { signIn, signUp } = useAuth()
+  const [showBtn, setShowBtn] = useState(false)
+  const [showPwd, setShowPwd] = useState(false)
+  const { signIn, signUp, error } = useAuth()
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>()
+  } = useForm<FormData>({ mode: 'all' })
+
   const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
     if (login) {
       await signIn(email, password)
+      console.log(error)
     } else {
       await signUp(email, password)
     }
@@ -49,6 +53,7 @@ const Login = () => {
         className="relative mt-24 space-y-8 rounded bg-black/50 py-10 px-8 md:mt-0 md:max-w-md md:px-16"
       >
         <h1 className="text-3xl font-bold">Sign In</h1>
+        {error && <p className="rounded bg-[#e87c03] px-5 py-3">{error}</p>}
         <div className="flex flex-col items-center space-y-4">
           <label className="w-full">
             <input
@@ -66,25 +71,42 @@ const Login = () => {
               <p className="errorMsg">Please enter a valid email</p>
             )}
           </label>
-          <label className="bor w-full">
-            <input
-              {...register('password', {
-                required: true,
-                minLength: 4,
-                maxLength: 60,
-              })}
-              type="password"
-              placeholder="Password"
-              className={`input ${
-                errors.password && 'border-b-2 border-[#e87c03]'
-              }`}
-            />
-            {errors.password && (
-              <p className="errorMsg">
-                Your password must contain between 4 and 60 characters.
-              </p>
-            )}
-          </label>
+          <div className="relative flex w-full">
+            <label className="w-full">
+              <input
+                {...register('password', {
+                  required: true,
+                  minLength: 4,
+                  maxLength: 60,
+                })}
+                type={showPwd ? 'text' : 'password'}
+                placeholder="Password"
+                className={`input group rounded-r-none ${
+                  errors.password && 'border-b-2 border-[#e87c03]'
+                }`}
+                onBlur={(e) => {
+                  console.log(e)
+                }}
+                onFocus={() => setShowBtn(true)}
+              />
+            </label>
+            <button
+              className={
+                showBtn
+                  ? `absolute right-0 z-10 h-full rounded-r bg-[#454545] pr-3 text-[#8c8c8c]  ${
+                      errors.password && 'border-b-2 border-[#e87c03]'
+                    }`
+                  : 'hidden'
+              }
+            >
+              SHOW
+            </button>
+          </div>
+          {errors.password && (
+            <p className="errorMsg !mt-0">
+              Your password must contain between 4 and 60 characters.
+            </p>
+          )}
         </div>
 
         <button
