@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import useAuth from '../hooks/useAuth'
 
@@ -13,17 +13,25 @@ const Login = () => {
   const [login, setLogin] = useState(false)
   const [showBtn, setShowBtn] = useState(false)
   const [showPwd, setShowPwd] = useState(false)
+  const pwdInput = useRef<HTMLInputElement | null>(null)
+
   const { signIn, signUp, error } = useAuth()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({ mode: 'all' })
+  const { ref, ...rest } = register('password', {
+    required: true,
+    minLength: 4,
+    maxLength: 60,
+  })
 
   const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
     if (login) {
       await signIn(email, password)
       console.log(error)
+      console.log(errors)
     } else {
       await signUp(email, password)
     }
@@ -62,6 +70,7 @@ const Login = () => {
                 pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g,
               })}
               type="email"
+              autoFocus={false}
               placeholder="Email"
               className={`input ${
                 errors.email && 'border-b-2 border-[#e87c03]'
@@ -71,42 +80,56 @@ const Login = () => {
               <p className="errorMsg">Please enter a valid email</p>
             )}
           </label>
-          <div className="relative flex w-full">
-            <label className="w-full">
+          <div
+            className="flex w-full flex-col focus:bg-[#454545]"
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget)) {
+                setShowBtn(false)
+                setShowPwd(false)
+              }
+            }}
+          >
+            <label className="flex w-full">
               <input
-                {...register('password', {
-                  required: true,
-                  minLength: 4,
-                  maxLength: 60,
-                })}
+                {...rest}
+                name="password"
+                ref={(e) => {
+                  ref(e)
+                  pwdInput.current = e
+                }}
                 type={showPwd ? 'text' : 'password'}
                 placeholder="Password"
-                className={`input group rounded-r-none ${
+                className={`input rounded-r-none ${
                   errors.password && 'border-b-2 border-[#e87c03]'
                 }`}
-                onBlur={(e) => {
-                  console.log(e)
-                }}
                 onFocus={() => setShowBtn(true)}
               />
+
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  setShowPwd(!showPwd)
+                  if (pwdInput.current) {
+                    pwdInput.current.focus()
+                  }
+                }}
+                className={
+                  showBtn
+                    ? `rounded-r bg-[#454545] pr-3 text-[#8c8c8c]  ${
+                        errors.password && 'border-b-2 border-[#e87c03]'
+                      }`
+                    : 'hidden'
+                }
+              >
+                {showPwd ? 'HIDE' : 'SHOW'}
+              </button>
             </label>
-            <button
-              className={
-                showBtn
-                  ? `absolute right-0 z-10 h-full rounded-r bg-[#454545] pr-3 text-[#8c8c8c]  ${
-                      errors.password && 'border-b-2 border-[#e87c03]'
-                    }`
-                  : 'hidden'
-              }
-            >
-              SHOW
-            </button>
+            {errors.password && (
+              <p className="errorMsg">
+                Your password must contain between 4 and 60 characters.
+              </p>
+            )}
           </div>
-          {errors.password && (
-            <p className="errorMsg !mt-0">
-              Your password must contain between 4 and 60 characters.
-            </p>
-          )}
         </div>
 
         <button
