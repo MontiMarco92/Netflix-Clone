@@ -1,4 +1,6 @@
 import Image from 'next/image'
+import { useRecoilState } from 'recoil'
+import { modalState, movieState } from '../atoms/modalAtom'
 import { Movie } from '../typings'
 
 interface Props {
@@ -6,8 +8,16 @@ interface Props {
 }
 
 const Thumbnail = ({ movie }: Props) => {
+  const [showModal, setShowModal] = useRecoilState(modalState)
+  const [currentMovie, setCurrentMovie] = useRecoilState(movieState)
   return (
-    <div className="relative h-28 min-w-[180px]">
+    <div
+      className="relative h-28 min-w-[180px] cursor-pointer"
+      onClick={() => {
+        setCurrentMovie(movie)
+        setShowModal(true)
+      }}
+    >
       <Image
         src={`https://image.tmdb.org/t/p/w500${
           movie.backdrop_path || movie.poster_path
