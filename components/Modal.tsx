@@ -19,7 +19,7 @@ function Modal() {
   const [trailer, setTrailer] = useState('')
   const [genres, setGenres] = useState<Genre[]>([])
   const [muted, setMuted] = useState(false)
-  const [videoError, setVideoError] = useState(false)
+  // const [videoError, setVideoError] = useState(false)
 
   useEffect(() => {
     if (!movie) return
@@ -78,13 +78,12 @@ function Modal() {
             style={{ position: 'absolute', top: '0', left: '0' }}
             playing={true}
             muted={muted}
-            onError={() => setVideoError(true)}
           />
-          {videoError && (
+          {/* {videoError && (
             <span className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black text-3xl text-white ">
               Sorry, the video could not be found.
             </span>
-          )}
+          )} */}
 
           <div className="absolute bottom-10 flex w-full items-center justify-between px-10">
             <div className="flex space-x-2">

@@ -7,6 +7,8 @@ import Row from '../components/Row'
 import { useRecoilValue } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
 import Modal from '../components/Modal'
+import useAuth from '../hooks/useAuth'
+import Plans from '../components/Plans'
 
 interface Props {
   netflixOriginals: Movie[]
@@ -30,10 +32,21 @@ const Home = ({
   trendingNow,
 }: Props) => {
   const showModal = useRecoilValue(modalState)
+  const { loading } = useAuth()
+
+  const subscription = false
+
+  if (loading || subscription === null) return null
+
+  if (!subscription) return <Plans />
 
   return (
     // because set fixed header we need to define relative to
-    <div className="relative h-screen bg-gradient-to-b  lg:h-[140vh]">
+    <div
+      className={`relative h-screen bg-gradient-to-b  lg:h-[140vh] ${
+        showModal && '!h-screen overflow-hidden'
+      }`}
+    >
       <Head>
         <title>Home - Netflix</title>
         <link rel="icon" href="/favicon.ico" />
