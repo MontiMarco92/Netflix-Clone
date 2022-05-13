@@ -1,10 +1,28 @@
 import { CheckIcon } from '@heroicons/react/outline'
+import { Product } from '@stripe/firestore-stripe-payments'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useState } from 'react'
 import useAuth from '../hooks/useAuth'
+import { loadCheckout } from '../lib/stripe'
+import Loader from './Loader'
+import Table from './Table'
 
-const Plans = () => {
-  const { logOut } = useAuth()
+interface Props {
+  products: Product[]
+}
+
+const Plans = ({ products }: Props) => {
+  const { logOut, user } = useAuth()
+  const [selectedPlan, setSelectedPlan] = useState<Product | null>(products[2])
+  const [billingLoading, setBillingLoading] = useState(false)
+
+  const subscribeToPlan = () => {
+    if (!user) return
+
+    loadCheckout(selectedPlan?.prices[0].id!)
+    setBillingLoading(true)
+  }
 
   return (
     <div>
@@ -30,7 +48,7 @@ const Plans = () => {
         </button>
       </header>
 
-      <main className="max-w-5xl px-5 pt-28 pb-12 transition-all md:px-10 ">
+      <main className="mx-auto max-w-5xl px-5 pt-28 pb-12 transition-all md:px-10 ">
         <h1 className="mb-3 text-2xl font-medium">
           Choose the plan that's right for you
         </h1>
@@ -52,10 +70,35 @@ const Plans = () => {
         <div className="mt-4 flex flex-col space-y-4">
           <div className="flex w-full items-center justify-center self-end md:w-3/5">
             {/* Plans */}
-            <div className="planBox">Standard</div>
-            <div className="planBox">Standard</div>
-            <div className="planBox">Standard</div>
+            {products.map((product) => (
+              <div
+                onClick={() => setSelectedPlan(product)}
+                key={product.id}
+                className={`planBox ${
+                  selectedPlan?.id === product.id ? 'opacity-100' : 'opacity-60'
+                }`}
+              >
+                {product.name}
+              </div>
+            ))}
           </div>
+
+          {/* Table */}
+          <Table products={products} selectedPlan={selectedPlan} />
+
+          <button
+            disabled={!selectedPlan || billingLoading}
+            className={`mx-auto w-11/12 rounded bg-[#e50914] py-4 text-xl shadow hover:bg-[#f6121d] md:w-[420px] ${
+              billingLoading && 'opacity-60'
+            }`}
+            onClick={subscribeToPlan}
+          >
+            {billingLoading ? (
+              <Loader color="dark:fill-gray-300" />
+            ) : (
+              'Subscribe'
+            )}
+          </button>
         </div>
       </main>
     </div>

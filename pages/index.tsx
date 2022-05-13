@@ -9,6 +9,9 @@ import { modalState } from '../atoms/modalAtom'
 import Modal from '../components/Modal'
 import useAuth from '../hooks/useAuth'
 import Plans from '../components/Plans'
+import { getProducts, Product } from '@stripe/firestore-stripe-payments'
+import payments from '../lib/stripe'
+import useSubscription from '../hooks/useSubscription'
 
 interface Props {
   netflixOriginals: Movie[]
@@ -19,6 +22,7 @@ interface Props {
   horrorMovies: Movie[]
   romanceMovies: Movie[]
   documentaries: Movie[]
+  products: Product[]
 }
 
 const Home = ({
@@ -30,15 +34,15 @@ const Home = ({
   romanceMovies,
   topRated,
   trendingNow,
+  products,
 }: Props) => {
   const showModal = useRecoilValue(modalState)
-  const { loading } = useAuth()
-
-  const subscription = false
+  const { loading, user } = useAuth()
+  const subscription = useSubscription(user)
 
   if (loading || subscription === null) return null
 
-  if (!subscription) return <Plans />
+  if (!subscription) return <Plans products={products} />
 
   return (
     // because set fixed header we need to define relative to
@@ -77,6 +81,13 @@ const Home = ({
 export default Home
 
 export const getServerSideProps = async () => {
+  const products = await getProducts(payments, {
+    includePrices: true,
+    activeOnly: true,
+  })
+    .then((response) => response)
+    .catch((err) => console.log(err.message))
+
   const [
     netflixOriginals,
     trendingNow,
@@ -107,6 +118,7 @@ export const getServerSideProps = async () => {
       horrorMovies: horrorMovies.results,
       romanceMovies: romanceMovies.results,
       documentaries: documentaries.results,
+      products,
     },
   }
 }
