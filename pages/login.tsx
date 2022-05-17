@@ -2,6 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import Loader from '../components/Loader'
 import useAuth from '../hooks/useAuth'
 
 interface FormData {
@@ -15,7 +16,9 @@ const Login = () => {
   const [showPwd, setShowPwd] = useState(false)
   const pwdInput = useRef<HTMLInputElement | null>(null)
 
-  const { signIn, signUp, error } = useAuth()
+  const load = true
+  const { signIn, signUp, error, loading } = useAuth()
+
   const {
     register,
     handleSubmit,
@@ -30,8 +33,6 @@ const Login = () => {
   const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
     if (login) {
       await signIn(email, password)
-      console.log(error)
-      console.log(errors)
     } else {
       await signUp(email, password)
     }
@@ -58,7 +59,7 @@ const Login = () => {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="relative mt-24 space-y-8 rounded bg-black/50 py-10 px-8 md:mt-0 md:max-w-md md:px-16"
+        className="relative mt-24 space-y-8 rounded bg-black/80 py-10 px-8 md:mt-0 md:w-[448px] md:max-w-md md:px-16"
       >
         <h1 className="text-3xl font-bold">Sign In</h1>
         {error && <p className="rounded bg-[#e87c03] px-5 py-3">{error}</p>}
@@ -133,11 +134,12 @@ const Login = () => {
         </div>
 
         <button
+          disabled={loading}
           type="submit"
           className="w-full rounded bg-red-600 py-2 font-bold"
           onClick={() => setLogin(true)}
         >
-          Sign In
+          {loading ? <Loader color="dark:fill-[#454545]" /> : 'Sign in'}
         </button>
 
         <div className="text-base text-[#8c8c8c]">

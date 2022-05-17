@@ -1,14 +1,10 @@
-import Image from 'next/image'
 import { SearchIcon, BellIcon } from '@heroicons/react/solid'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import useAuth from '../hooks/useAuth'
 import BasicMenu from './BasicMenu'
 
 function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
-
-  const { logOut } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,7 +24,7 @@ function Header() {
 
   return (
     <header className={`${isScrolled && 'bg-[#141414]'}`}>
-      <div className=" flex items-center justify-start space-x-2 md:space-x-10">
+      <div className=" flex items-center justify-start space-x-2 md:space-x-6">
         <img
           src="https://rb.gy/ulxxee"
           alt="Logo"

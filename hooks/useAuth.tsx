@@ -83,7 +83,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       .then((loggedUser) => {
         setUser(loggedUser.user)
         router.push('/')
-        setLoading(false)
       })
       .catch((err) => {
         console.log(err.message)
@@ -97,7 +96,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             'Incorrect password. Please try again or you can reset your password'
           )
         }
-        setLoading(false)
       })
       .finally(() => setLoading(false))
   }
