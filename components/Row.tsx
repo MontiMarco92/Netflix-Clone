@@ -2,9 +2,10 @@ import { Movie } from '../typings'
 import { useRef, useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline'
 import Thumbnail from './Thumbnail'
+import { DocumentData } from 'firebase/firestore'
 
 interface Props {
-  movies: Movie[]
+  movies: Movie[] | DocumentData[]
   title: string
 }
 

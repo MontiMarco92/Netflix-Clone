@@ -5,13 +5,14 @@ import requests from '../utils/requests'
 import { Movie } from '../typings'
 import Row from '../components/Row'
 import { useRecoilValue } from 'recoil'
-import { modalState } from '../atoms/modalAtom'
+import { modalState, movieState } from '../atoms/modalAtom'
 import Modal from '../components/Modal'
 import useAuth from '../hooks/useAuth'
 import Plans from '../components/Plans'
 import { getProducts, Product } from '@stripe/firestore-stripe-payments'
 import payments from '../lib/stripe'
 import useSubscription from '../hooks/useSubscription'
+import useList from '../hooks/useList'
 
 interface Props {
   netflixOriginals: Movie[]
@@ -39,6 +40,7 @@ const Home = ({
   const showModal = useRecoilValue(modalState)
   const { loading, user } = useAuth()
   const subscription = useSubscription(user)
+  const list = useList(user?.uid)
 
   if (loading || subscription === null) return null
 
@@ -61,7 +63,7 @@ const Home = ({
         {/* Banner */}
         <Banner netflixOriginals={netflixOriginals} />
 
-        <section className="md:space-y-16">
+        <section className="space-y-5 md:space-y-16">
           <Row title="Trending Now" movies={trendingNow} />
           <Row title="Top Rated" movies={topRated} />
           <Row title="Action Movies" movies={actionMovies} />
@@ -70,6 +72,7 @@ const Home = ({
           <Row title="Romance Movies" movies={romanceMovies} />
           <Row title="Documentaries" movies={documentaries} />
           {/* My List */}
+          {list.length > 0 && <Row title="My List" movies={list} />}
         </section>
       </main>
       {/* Modal */}
